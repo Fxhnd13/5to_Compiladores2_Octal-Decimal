@@ -1,0 +1,66 @@
+package Analizadores; 
+
+import java.util.ArrayList;
+import java.util.List;
+import java_cup.runtime.Symbol;
+import java_cup.runtime.XMLElement;
+import java_cup.runtime.XMLElement;
+
+action code {:
+:}
+
+parser code {:
+        
+        public parser(Lexer lex) { 
+            super(lex);   
+	}
+        
+        public void setAccion(String tipo, String mensaje, String accion){
+            System.out.println(tipo+"         "+mensaje);
+        }
+
+        public void unrecovered_syntax_error(Symbol cur_token){
+            System.err.println("Couldn't repair and continue parse "+cur_token.value);
+        }
+
+        public void syntax_error(Symbol s){
+            String message = "";
+            StringBuilder m = new StringBuilder("Error:");
+        }
+
+:}
+
+/* Terminals (tokens returned by the scanner). */
+terminal int           OCTAL;
+
+non terminal Integer     octal;
+non terminal Nodo        S, octals;
+
+/* The grammar */
+
+start with octals;
+
+S      ::=          octals:valorRecorrido {:
+                        RESULT = (valorRecorrido);
+                    :}
+                    ;
+
+octals ::=          octals:valorRecorrido octal:valorActual {:
+                        Nodo temp = new Nodo();
+                        temp.setValor(valorActual);
+                        Nodo nodo = new Nodo(valorRecorrido, temp);
+                        nodo.setNivel(valorRecorrido.getNivel()+1);
+                        RESULT = nodo;
+                    :}
+                    |octal:valorActual {:
+                        Nodo nodo = new Nodo();
+                        nodo.setNivel(0);
+                        nodo.setValor(valorActual);
+                        RESULT = nodo;
+                    :}
+                    ;
+
+octal ::=           OCTAL:valor {:
+                        RESULT = valor;
+                    :}
+                    ;   
